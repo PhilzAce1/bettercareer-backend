@@ -9,7 +9,9 @@ import { isDevelopment } from './helpers/index.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const server = fastify();
+const server = fastify({
+  logger: true,
+});
 
 await server.register(env, {
   dotenv: true,

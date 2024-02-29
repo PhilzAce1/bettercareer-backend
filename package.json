@@ -10,6 +10,7 @@
     "prebuild": "rm -rf ./dist"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.2",
     "@tsconfig/node20": "^20.1.2",
     "@types/fancy-log": "^2.0.2",
     "@types/node": "^20.11.22",
