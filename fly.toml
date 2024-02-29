@@ -1,4 +1,3 @@
-app = 'bettercareer-api'
 primary_region = 'ams'
 
 [build]
