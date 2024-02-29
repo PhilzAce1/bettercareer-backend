@@ -9,9 +9,12 @@ LABEL fly_launch_runtime="Node.js"
 # Node.js app lives here
 WORKDIR /app
 
+ARG DATABASE_URL
+
 # Set production environment
-ENV NODE_ENV="production"
 ENV PORT=8080
+ENV NODE_ENV="production"
+ENV DATABASE_URL=$DATABASE_URL
 
 # Throw-away build stage to reduce size of final image
 FROM base as build
