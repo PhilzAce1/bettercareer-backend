@@ -1,2 +1,2 @@
 # bettercareer-backend
-Backend for Better Career
+Backend for Bettercareer
