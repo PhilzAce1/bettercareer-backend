@@ -12,7 +12,6 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: npm ci --include=dev
       - name: Deploy
-        run:
-          flyctl deploy --remote-only --app bettercareer-staging-api
+        run: flyctl deploy --remote-only -a bettercareer-staging-api
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
