@@ -27,6 +27,11 @@ RUN apt-get update -qq && \
 COPY --link package-lock.json package.json ./
 RUN npm ci --include=dev
 
+# Deploy migrations and generate prisma client
+COPY --link prisma .
+RUN npx prisma migrate deploy
+RUN npx prisma generate
+
 # Copy application code
 COPY --link . .
 
