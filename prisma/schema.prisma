@@ -9,6 +9,14 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
+  name      String
+  photo     String
+  email     String
+  suspended Boolean? @default(false)
+  deleted   Boolean? @default(false)
+  verified  Boolean? @default(false)
+  providers Json
+  session   Json // { token, provider, iat, exp }
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
