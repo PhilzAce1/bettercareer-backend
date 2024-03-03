@@ -24,7 +24,7 @@ if (isDevelopment) {
 }
 
 await server.register(import('@fastify/static'), {
-  root: join(__dirname, 'static'),
+  root: join(__dirname, '..', 'static'),
   prefix: '/static/',
 });
 
