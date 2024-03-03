@@ -17,10 +17,10 @@ export default async (server: FastifyInstance) => {
     scope: ['profile email'],
     credentials: {
       client: {
-        id: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
-        secret: process.env.GOOGLE_OAUTH_CLIENT_SECRET as string,
+        id: server.config.GOOGLE_OAUTH_CLIENT_ID,
+        secret: server.config.GOOGLE_OAUTH_CLIENT_SECRET,
       },
-      auth: OAuth2.GOOGLE_CONFIGURATION,
+      auth: OAuth2.default.GOOGLE_CONFIGURATION,
     },
     // register a fastify url to start the redirect flow
     startRedirectPath: '/oauth/google',
@@ -29,15 +29,17 @@ export default async (server: FastifyInstance) => {
   });
 
   server.get('/google/callback', async (request: FastifyRequest) => {
-    const { token } =
-      await server.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(
-        request,
-      );
+
+    try { 
+      const {token} = await server.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(request);
 
     // TO-DO: handle undefined/null token
     console.log(token);
 
     return { token }; // TO-DO: redirect to frontend
+    } catch (error) {
+      console.log(error)
+    }
   });
 };
 

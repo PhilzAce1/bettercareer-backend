@@ -3,7 +3,6 @@ import { type FastifyInstance } from 'fastify';
 import fastifyPlugin from 'fastify-plugin';
 
 declare module 'fastify' {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface FastifyInstance {
     prisma: PrismaClient;
   }

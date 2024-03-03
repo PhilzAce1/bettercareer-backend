@@ -6,6 +6,8 @@ declare module 'fastify' {
       PORT: number;
       NODE_ENV: string;
       HOST: string;
+      GOOGLE_OAUTH_CLIENT_ID: string;
+      GOOGLE_OAUTH_CLIENT_SECRET: string;
     };
   }
 }
