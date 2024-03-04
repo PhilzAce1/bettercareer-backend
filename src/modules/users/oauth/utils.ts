@@ -1,6 +1,11 @@
 import jwt from 'jsonwebtoken';
 
-type SessionPayload = { id: string; provider: string };
+type SessionPayload = {
+  user: {
+    id: string;
+    provider: string;
+  };
+};
 
 export type UserSession = {
   token: string;
@@ -15,8 +20,7 @@ const SESSION_KEY = 'MycroOnBetterCareersF';
 export const createSession = (payload: SessionPayload) => {
   const date = new Date();
 
-  const { provider, ...user } = payload;
-  const token = jwt.sign(user, SESSION_KEY, {
+  const token = jwt.sign(payload.user, SESSION_KEY, {
     expiresIn: `${SESSION_LIFETIME}d`,
   });
 
@@ -24,6 +28,14 @@ export const createSession = (payload: SessionPayload) => {
     token,
     iat: date,
     exp: date.setDate(date.getDate() + SESSION_LIFETIME),
-    provider: payload.provider,
+    provider: payload.user.provider,
   };
+};
+
+export const decodedSessionToken = (token?: string) => {
+  if (!token) throw new TypeError();
+
+  return jwt.decode(token, {
+    complete: true,
+  }) as unknown as SessionPayload;
 };
