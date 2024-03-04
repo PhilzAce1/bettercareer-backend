@@ -37,7 +37,7 @@ export async function authenticate(
 
   const OAuthUser = auth.getUser();
 
-  const user = await this.prisma.user.findFirst({
+  let user = await this.prisma.user.findFirst({
     where: {
       providers: {
         array_contains: {
@@ -49,14 +49,36 @@ export async function authenticate(
   });
 
   // TODO: check if user exist but with different provider
-  if (!user) throw new Error();
+
+  if (!user) {
+    user = await this.prisma.user.create({
+      data: {
+        name: OAuthUser.name as string,
+        email: OAuthUser.email as string,
+        photo: OAuthUser.photo as string,
+        verified: OAuthUser.verifed,
+        providers: [
+          {
+            provider,
+            externalId: OAuthUser.id,
+          },
+        ],
+      },
+    });
+  }
+
   if (user.suspended) throw new Error();
   if (user.deleted) throw new Error();
 
   const userWithSession = await this.prisma.user.update({
     where: { id: user.id },
     data: {
-      session: createSession({ id: user.id, provider }),
+      session: createSession({
+        user: {
+          id: user.id,
+          provider,
+        },
+      }),
     },
   });
 
