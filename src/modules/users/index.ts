@@ -1,8 +1,6 @@
 import { type FastifyInstance } from 'fastify';
+import { authenticate } from './oauth/index.js';
 
 export default async (server: FastifyInstance) => {
-  server.get('/users', async () => {
-    const users = await server.prisma.user.findMany();
-    return { users };
-  });
+  server.post('/oauth/:provider', authenticate);
 };

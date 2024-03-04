@@ -1,27 +1,43 @@
 import { OAuth2Client, type TokenPayload } from 'google-auth-library';
+import { OAuthStrategy, SetOAuthUser } from './index.js';
 
-export const verify = async (token: string) => {
-  const client = new OAuth2Client();
+export class GoogleOAuthStrategy implements OAuthStrategy {
+  private payload: TokenPayload | undefined;
+  private token: string;
 
-  let ticket;
-  try {
-    ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
+  private client: OAuth2Client;
+
+  constructor(token?: string) {
+    if (!token) throw new TypeError();
+
+    this.client = new OAuth2Client();
+    this.token = token;
+  }
+
+  async serialize(setUser: SetOAuthUser) {
+    if (!this.payload) throw new TypeError();
+    const payload = this.payload;
+
+    setUser({
+      id: payload.sub,
+      name: payload.name,
+      photo: payload.picture,
+      email: payload.email,
+      verifed: payload.email_verified,
     });
-  } catch {}
+  }
 
-  return ticket?.getPayload();
-};
+  async verify() {
+    let ticket;
+    try {
+      ticket = await this.client.verifyIdToken({
+        idToken: this.token,
+        audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
+      });
+    } catch (error) {
+      throw error;
+    }
 
-export const serialize = (payload?: TokenPayload) => {
-  if (!payload) throw new TypeError();
-
-  return {
-    id: payload.sub,
-    name: payload.name,
-    photo: payload.picture,
-    email: payload.email,
-    verifed: payload.email_verified,
-  };
-};
+    this.payload = ticket?.getPayload();
+  }
+}

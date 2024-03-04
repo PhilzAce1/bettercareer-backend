@@ -37,6 +37,7 @@ await server.register(autoload, {
 await server.register(autoload, {
   dir: join(__dirname, 'modules'),
   dirNameRoutePrefix: false,
+  prefix: '/v1',
   maxDepth: 1,
 });
 

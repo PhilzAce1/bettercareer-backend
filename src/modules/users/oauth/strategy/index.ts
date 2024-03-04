@@ -1,29 +1,44 @@
-import * as GOOGLE from './google.js';
-import * as LINKEDIN from './linkedin.js';
-
-// TODO: add validation
-type User = Partial<{
+export type OAuthUser = {
   id: string;
-  name: string;
-  photo: string;
-  email: string;
-  verifed: boolean;
-}>;
-
-type Provider = 'google';
-type ProviderStrategy = {
-  verify: (token: string) => Promise<unknown>;
-  // TODO: fix any
-  serialize: (payload?: any) => User;
+  name?: string;
+  photo?: string;
+  email?: string;
+  verifed?: boolean;
 };
 
-export const STRATEGY = {
-  google: {
-    verify: GOOGLE.verify,
-    serialize: GOOGLE.serialize,
-  },
-  // linkedin: {
-  //   verify: LINKEDIN.verify,
-  //   serialize: LINKEDIN.serialize,
-  // },
-} satisfies Record<Provider, ProviderStrategy>;
+export type SetOAuthUser = (user: OAuthUser) => void;
+
+export interface OAuthStrategy {
+  serialize(setUser: SetOAuthUser): PromiseLike<void>;
+  verify(): PromiseLike<void>;
+}
+
+export class OAuth {
+  private strategy: OAuthStrategy;
+  private user: OAuthUser | undefined;
+
+  constructor(strategy?: OAuthStrategy) {
+    if (!strategy) throw new TypeError();
+    this.strategy = strategy;
+  }
+
+  async verify() {
+    this.strategy.verify();
+  }
+
+  private setUser(user: OAuthUser) {
+    this.user = user;
+  }
+
+  async serialize() {
+    this.strategy.serialize(this.setUser);
+  }
+
+  getUser() {
+    if (!this.user) throw new TypeError();
+    return this.user;
+  }
+}
+
+export { GoogleOAuthStrategy } from './google.js';
+export { LinkedInOAuthStrategy } from './linkedin.js';
