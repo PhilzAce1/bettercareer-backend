@@ -1,7 +1,7 @@
-import { FastifyInstance } from 'fastify/types/instance.js';
-import { UserSession, decodedSessionToken } from './utils.js';
-import { FastifyRequest } from 'fastify';
+import { type FastifyInstance, type FastifyRequest } from 'fastify';
+import { type FastifyAuthFunction } from '@fastify/auth';
 import { Prisma } from '@prisma/client';
+import { type UserSession, decodedSessionToken } from './utils.js';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -10,12 +10,15 @@ declare module 'fastify' {
       session: UserSession;
     };
   }
+
+  interface FastifyInstance {
+    authorize: FastifyAuthFunction;
+    oauthorize: FastifyAuthFunction;
+  }
 }
 
-const setRequestingUser = (
-  request: FastifyRequest,
-  user: Prisma.UserGetPayload<{}>,
-) => {
+type User = Prisma.UserGetPayload<{}>;
+const setRequestingUser = (request: FastifyRequest, user: User) => {
   request.user.id = user.id;
   request.user.session = user.session as unknown as UserSession;
 };
@@ -42,4 +45,12 @@ export async function authorize(
   setRequestingUser(request, user);
 }
 
-export async function isAdmin(this: FastifyInstance) {}
+// TODO: rename
+export async function oauthorize(
+  this: FastifyInstance,
+  request: FastifyRequest,
+) {
+  try {
+    await authorize.call(this, request);
+  } catch {}
+}

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { schema } from './config/index.js';
 import { isDevelopment } from './helpers/index.js';
+import { guards } from './modules/users/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,6 +23,10 @@ await server.register(env, {
 if (isDevelopment) {
   await server.register(import('fastify-print-routes'));
 }
+
+await server.register(import('@fastify/auth'));
+server.decorate('authorize', guards.authorize);
+server.decorate('oauthorize', guards.oauthorize);
 
 await server.register(import('@fastify/static'), {
   root: join(__dirname, '..', 'static'),
