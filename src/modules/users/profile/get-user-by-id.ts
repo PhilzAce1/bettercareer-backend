@@ -15,17 +15,17 @@ export async function getUserById(
   request: FastifyRequest<GetUserByIdRequest>,
   reply: FastifyReply,
 ) {
-  const isCurrentUser = !request.params.id;
-  const userId = request.params.id || request.user.id;
+  const isMe = !request.params.id || request.params.id === 'me';
+  const userId = isMe ? request.user.id : request.params.id;
 
   const user = await this.prisma.user.findFirst({
     where: { id: userId },
     select: {
-      session: isCurrentUser,
+      session: isMe,
       providers: false,
     },
   });
 
   if (!user) throw new Error('User not found');
-  return reply.send({ user });
+  return reply.ok({ user });
 }

@@ -50,6 +50,7 @@ export async function authenticate(
 
   // TODO: check if user exist but with different provider
 
+  let isNewUser = false;
   if (!user) {
     user = await this.prisma.user.create({
       data: {
@@ -65,6 +66,8 @@ export async function authenticate(
         ],
       },
     });
+
+    isNewUser = true;
   }
 
   if (user.suspended) throw new Error();
@@ -86,8 +89,12 @@ export async function authenticate(
   const session = userWithSession.session as UserSession;
 
   const { providers, ...cleanUser } = user;
-  reply.statusCode = 200;
-  return reply.send({ user: cleanUser, token: session.token });
+  const status = isNewUser ? 'created' : 'ok';
+  return reply[status]({
+    isNewUser,
+    user: cleanUser,
+    token: session.token,
+  });
 }
 
 export async function resetSession(
@@ -100,6 +107,5 @@ export async function resetSession(
     data: { session: {} },
   });
 
-  reply.statusCode = 204;
-  return reply.send();
+  return reply.noContent();
 }

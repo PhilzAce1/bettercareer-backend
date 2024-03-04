@@ -22,5 +22,5 @@ const prismaPlugin = async (server: FastifyInstance) => {
 };
 
 export default fastifyPlugin(prismaPlugin, {
-  name: 'fastify-prisma',
+  name: '@bettercareer/fastify-prisma',
 });
