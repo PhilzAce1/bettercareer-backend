@@ -89,3 +89,17 @@ export async function authenticate(
   reply.statusCode = 200;
   return reply.send({ user: cleanUser, token: session.token });
 }
+
+export async function resetSession(
+  this: FastifyInstance,
+  request: FastifyRequest,
+  reply: FastifyReply,
+) {
+  await this.prisma.user.update({
+    where: { id: request.user.id },
+    data: { session: {} },
+  });
+
+  reply.statusCode = 204;
+  return reply.send();
+}
