@@ -28,10 +28,10 @@ await server.register(import('@fastify/auth'));
 server.decorate('authorize', guards.authorize);
 server.decorate('oauthorize', guards.oauthorize);
 
-await server.register(import('@fastify/static'), {
-  root: join(__dirname, '..', 'static'),
-  prefix: '/static/',
-});
+// await server.register(import('@fastify/static'), {
+//   root: join(__dirname, '..', 'static'),
+//   prefix: '/static/',
+// });
 
 await server.register(autoload, {
   dir: join(__dirname, 'plugins'),
@@ -42,7 +42,6 @@ await server.register(autoload, {
 await server.register(autoload, {
   dir: join(__dirname, 'modules'),
   dirNameRoutePrefix: false,
-  prefix: '/v1',
   maxDepth: 1,
 });
 
