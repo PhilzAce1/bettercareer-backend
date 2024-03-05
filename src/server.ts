@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { schema } from './config/index.js';
 import { isDevelopment } from './helpers/index.js';
-import { guards } from './modules/users/index.js';
+import * as guards from './modules/users/oauth/guards.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -48,15 +48,16 @@ await server.register(autoload, {
 
 server.get('*', (_request, reply) => reply.send('OK'));
 
-server
-  .listen({
-    port: server.config.PORT,
-    host: server.config.HOST,
-  })
-  .then((address) => {
+export const startServer = async () => {
+  try {
+    const address = await server.listen({
+      port: server.config.PORT,
+      host: server.config.HOST,
+    });
+
     server.log.info(`Server running at ${address}`);
-  })
-  .catch((error) => {
+  } catch (error) {
     server.log.error(error);
     process.exit(1);
-  });
+  }
+};

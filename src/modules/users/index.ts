@@ -1,7 +1,6 @@
 import { type FastifyInstance } from 'fastify';
 import { authenticate, resetSession } from './oauth/index.js';
 import { getUserById } from './profile/get-user-by-id.js';
-import { authorize, oauthorize } from './oauth/guards.js';
 
 export default async (server: FastifyInstance) => {
   server.post('/oauth/:provider', authenticate);
@@ -21,5 +20,3 @@ export default async (server: FastifyInstance) => {
     getUserById,
   );
 };
-
-export const guards = { authorize, oauthorize };

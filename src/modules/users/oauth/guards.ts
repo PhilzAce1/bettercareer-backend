@@ -1,4 +1,8 @@
-import { type FastifyInstance, type FastifyRequest } from 'fastify';
+import {
+  FastifyReply,
+  type FastifyInstance,
+  type FastifyRequest,
+} from 'fastify';
 import { type FastifyAuthFunction } from '@fastify/auth';
 import { Prisma } from '@prisma/client';
 import { type UserSession, decodedSessionToken } from './utils.js';
@@ -18,7 +22,7 @@ declare module 'fastify' {
 }
 
 type User = Prisma.UserGetPayload<{}>;
-const setRequestingUser = (request: FastifyRequest, user: User) => {
+const setCurrentUser = (request: FastifyRequest, user: User) => {
   request.user.id = user.id;
   request.user.session = user.session as unknown as UserSession;
 };
@@ -26,6 +30,7 @@ const setRequestingUser = (request: FastifyRequest, user: User) => {
 export async function authorize(
   this: FastifyInstance,
   request: FastifyRequest,
+  _?: FastifyReply,
 ) {
   const payload = decodedSessionToken(request.headers.authorization);
   if (!payload?.user) throw new Error();
@@ -42,13 +47,14 @@ export async function authorize(
   });
 
   if (!user) throw new Error();
-  setRequestingUser(request, user);
+  setCurrentUser(request, user);
 }
 
 // TODO: rename
 export async function oauthorize(
   this: FastifyInstance,
   request: FastifyRequest,
+  _?: FastifyReply,
 ) {
   try {
     await authorize.call(this, request);
