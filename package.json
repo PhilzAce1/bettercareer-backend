@@ -13,6 +13,7 @@
     "@flydotio/dockerfile": "^0.5.2",
     "@tsconfig/node20": "^20.1.2",
     "@types/fancy-log": "^2.0.2",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.11.22",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
@@ -24,12 +25,17 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@fastify/auth": "^4.6.1",
     "@fastify/autoload": "^5.8.0",
     "@fastify/env": "^4.3.0",
+    "@fastify/error": "^3.4.1",
     "@fastify/static": "^7.0.1",
     "@prisma/client": "^5.10.2",
     "fastify": "^4.26.1",
+    "fastify-cors": "^6.1.0",
     "fastify-plugin": "^4.5.1",
-    "fastify-print-routes": "^3.1.1"
+    "fastify-print-routes": "^3.1.1",
+    "google-auth-library": "^9.6.3",
+    "jsonwebtoken": "^9.0.2"
   }
 }

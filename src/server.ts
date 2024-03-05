@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { schema } from './config/index.js';
 import { isDevelopment } from './helpers/index.js';
+import * as guards from './modules/users/oauth/guards.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,6 +24,10 @@ if (isDevelopment) {
   await server.register(import('fastify-print-routes'));
 }
 
+await server.register(import('@fastify/auth'));
+server.decorate('authorize', guards.authorize);
+server.decorate('oauthorize', guards.oauthorize);
+
 await server.register(import('@fastify/static'), {
   root: join(__dirname, '..', 'static'),
   prefix: '/static/',
@@ -37,20 +42,22 @@ await server.register(autoload, {
 await server.register(autoload, {
   dir: join(__dirname, 'modules'),
   dirNameRoutePrefix: false,
+  prefix: '/v1',
   maxDepth: 1,
 });
 
 server.get('*', (_request, reply) => reply.send('OK'));
 
-server
-  .listen({
-    port: server.config.PORT,
-    host: server.config.HOST,
-  })
-  .then((address) => {
+export const startServer = async () => {
+  try {
+    const address = await server.listen({
+      port: server.config.PORT,
+      host: server.config.HOST,
+    });
+
     server.log.info(`Server running at ${address}`);
-  })
-  .catch((error) => {
+  } catch (error) {
     server.log.error(error);
     process.exit(1);
-  });
+  }
+};

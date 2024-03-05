@@ -10,5 +10,7 @@ export const schema = {
     },
     HOST: { type: 'string' },
     NODE_ENV: { type: 'string' },
+    GOOGLE_OAUTH_CLIENT_ID:  { type: 'string' },
+    GOOGLE_OAUTH_CLIENT_SECRET:  { type: 'string' }
   },
 };
