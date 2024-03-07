@@ -35,12 +35,22 @@ const ForbiddenError = createError(
   403,
 );
 
+const getBearerTokenFromHeader = (authorization?: string) => {
+  if (!authorization) return;
+  const [, token] = authorization.split(' ');
+  if (!token) return;
+  return token;
+};
+
 export async function authorize(
   this: FastifyInstance,
   request: FastifyRequest,
   _?: FastifyReply,
 ) {
-  const payload = decodedSessionToken(request.headers.authorization);
+  const token = getBearerTokenFromHeader(
+    request.headers.authorization,
+  );
+  const payload = decodedSessionToken(token);
   if (!payload?.user) throw new ForbiddenError();
 
   const user = await this.prisma.user
