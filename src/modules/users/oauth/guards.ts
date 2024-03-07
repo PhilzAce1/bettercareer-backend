@@ -5,7 +5,9 @@ import {
 } from 'fastify';
 import { type FastifyAuthFunction } from '@fastify/auth';
 import { Prisma } from '@prisma/client';
+import createError from '@fastify/error';
 import { type UserSession, decodedSessionToken } from './utils.js';
+import { TemporaryServiceError } from '../../../helpers/error.js';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -27,26 +29,36 @@ const setCurrentUser = (request: FastifyRequest, user: User) => {
   request.user.session = user.session as unknown as UserSession;
 };
 
+const ForbiddenError = createError(
+  `FORBIDDEN`,
+  'Authentication failed',
+  403,
+);
+
 export async function authorize(
   this: FastifyInstance,
   request: FastifyRequest,
   _?: FastifyReply,
 ) {
   const payload = decodedSessionToken(request.headers.authorization);
-  if (!payload?.user) throw new Error();
+  if (!payload?.user) throw new ForbiddenError();
 
-  const user = await this.prisma.user.findFirst({
-    where: {
-      id: payload.user.id,
-      session: {
-        array_contains: {
-          provider: payload.user.provider,
+  const user = await this.prisma.user
+    .findFirst({
+      where: {
+        id: payload.user.id,
+        session: {
+          array_contains: {
+            provider: payload.user.provider,
+          },
         },
       },
-    },
-  });
+    })
+    .catch(() => {
+      throw new TemporaryServiceError();
+    });
 
-  if (!user) throw new Error();
+  if (!user) throw new ForbiddenError();
   setCurrentUser(request, user);
 }
 

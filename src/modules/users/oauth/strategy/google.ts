@@ -1,30 +1,21 @@
 import { OAuth2Client, type TokenPayload } from 'google-auth-library';
 import { OAuthStrategy, SetOAuthUser } from './index.js';
-import CustomError from '../../../../helpers/error.js';
+import { TemporaryServiceError } from '../../../../helpers/error.js';
 
 export class GoogleOAuthStrategy implements OAuthStrategy {
   private payload: TokenPayload | undefined;
+  private client: OAuth2Client;
   private token: string;
 
-  private client: OAuth2Client;
-
   constructor(token?: string) {
-    if (!token) throw new CustomError({
-      message: 'OAuth token not found.',
-      statusCode: 404,
-      code: 'OAUTH ERROR'
-    });
+    if (!token) throw new TemporaryServiceError();
 
     this.client = new OAuth2Client();
     this.token = token;
   }
 
   async serialize(setUser: SetOAuthUser) {
-    if (!this.payload) throw new CustomError({
-      message: 'User data not found.',
-      statusCode: 404,
-      code: 'OAUTH ERROR'
-    });
+    if (!this.payload) throw new TemporaryServiceError();
     const payload = this.payload;
 
     setUser({
@@ -43,8 +34,8 @@ export class GoogleOAuthStrategy implements OAuthStrategy {
         idToken: this.token,
         audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
       });
-    } catch (error) {
-      throw error;
+    } catch {
+      throw new TemporaryServiceError();
     }
 
     this.payload = ticket?.getPayload();

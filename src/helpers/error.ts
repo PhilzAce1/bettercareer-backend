@@ -1,22 +1,7 @@
-import { FastifyError } from '@fastify/error';
+import createError from '@fastify/error';
 
-interface CustomErrorParams {
-    name?: string;
-    message: string;
-    statusCode: number;
-    code: string;
-}
-
-export default class CustomError extends Error implements FastifyError {
-    code: string;
-    statusCode?: number;
-    message: string;
-
-    constructor({message, statusCode, code}: CustomErrorParams) {
-        super(message)
-        this.message = message;
-        this.statusCode = statusCode;
-        this.code = code || 'ERROR';
-    }
-
-};
+export const TemporaryServiceError = createError(
+  `TEMPORARY_SERVICE_ERROR`,
+  `We are currently unable to process your request, please try again later`,
+  500,
+);
