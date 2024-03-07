@@ -40,7 +40,6 @@ await server.register(import('@fastify/static'), {
 await server.register(autoload, {
   dir: join(__dirname, 'plugins'),
   dirNameRoutePrefix: false,
-  prefix: '/api/v1',
   maxDepth: 1,
 });
 

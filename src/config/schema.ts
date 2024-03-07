@@ -31,8 +31,6 @@ export const schema = {
   },
 } as const;
 
-type RequiredPropeties = '';
-
 type ConfigProperties = (typeof schema)['properties'];
 type ConfigPropertyKey = keyof ConfigProperties;
 type ConfigPropertyType<K extends ConfigPropertyKey> =
