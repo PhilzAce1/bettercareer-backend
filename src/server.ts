@@ -1,5 +1,4 @@
 import fastify from 'fastify';
-import env from '@fastify/env';
 import autoload from '@fastify/autoload';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -14,10 +13,15 @@ const server = fastify({
   logger: true,
 });
 
-await server.register(env, {
+await server.register(import('@fastify/env'), {
   dotenv: true,
   data: process.env,
   schema,
+});
+
+await server.register(import('@fastify/cors'), {
+  origin: '*',
+  allowedHeaders: ['Content-Type', 'Authorization'],
 });
 
 if (isDevelopment) {
@@ -28,10 +32,10 @@ await server.register(import('@fastify/auth'));
 server.decorate('authorize', guards.authorize);
 server.decorate('oauthorize', guards.oauthorize);
 
-// await server.register(import('@fastify/static'), {
-//   root: join(__dirname, '..', 'static'),
-//   prefix: '/static/',
-// });
+await server.register(import('@fastify/static'), {
+  root: join(__dirname, '..', 'static'),
+  prefix: '/static/',
+});
 
 await server.register(autoload, {
   dir: join(__dirname, 'plugins'),
