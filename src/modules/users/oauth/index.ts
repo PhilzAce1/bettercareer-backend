@@ -24,12 +24,13 @@ export async function authenticate(
   reply: FastifyReply,
 ) {
   const { provider } = request.params;
+  const { token } = request.body;
 
   const auth = new OAuth(
     provider === 'google'
-      ? new GoogleOAuthStrategy(request.body.token)
+      ? new GoogleOAuthStrategy(token)
       : provider === 'linkedin'
-        ? new LinkedInOAuthStrategy()
+        ? new LinkedInOAuthStrategy(token)
         : undefined,
   );
 
