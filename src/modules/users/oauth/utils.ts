@@ -15,20 +15,22 @@ export type UserSession = {
   provider: string;
 };
 
-const SESSION_LIFETIME = 30;
-const SESSION_KEY = 'MycroOnBetterCareersF';
+const SESSION_TOKEN_LIFETIME = Number(
+  process.env.SESSION_TOKEN_LIFETIME,
+);
+const SESSION_TOKEN_KEY = process.env.SESSION_TOKEN_KEY;
 
 export const createSession = (payload: SessionPayload) => {
   const date = new Date();
 
-  const token = jwt.sign(payload.user, SESSION_KEY, {
-    expiresIn: `${SESSION_LIFETIME}d`,
+  const token = jwt.sign(payload.user, SESSION_TOKEN_KEY, {
+    expiresIn: `${SESSION_TOKEN_LIFETIME}d`,
   });
 
   return {
     token,
     iat: date,
-    exp: date.setDate(date.getDate() + SESSION_LIFETIME),
+    exp: date.setDate(date.getDate() + SESSION_TOKEN_LIFETIME),
     provider: payload.user.provider,
   };
 };
