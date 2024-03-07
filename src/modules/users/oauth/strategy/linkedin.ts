@@ -35,14 +35,11 @@ export class LinkedInOAuthStrategy implements OAuthStrategy {
   async verify() {
     try {
       const user = await got
-        .post(
-          process.env.LINKEDIN_OAUTH_USERINFO_ENDPOINT as string,
-          {
-            headers: {
-              Authorization: `Bearer ${this.token}`,
-            },
+        .post(process.env.LINKEDIN_OAUTH_USERINFO_ENDPOINT, {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
           },
-        )
+        })
         .json<UserInfoFromLinkedIn>();
 
       if (!user) throw new TemporaryServiceError();

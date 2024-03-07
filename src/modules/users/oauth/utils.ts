@@ -18,7 +18,7 @@ export type UserSession = {
 const SESSION_TOKEN_LIFETIME = Number(
   process.env.SESSION_TOKEN_LIFETIME,
 );
-const SESSION_TOKEN_KEY = process.env.SESSION_TOKEN_KEY as string;
+const SESSION_TOKEN_KEY = process.env.SESSION_TOKEN_KEY;
 
 export const createSession = (payload: SessionPayload) => {
   const date = new Date();
