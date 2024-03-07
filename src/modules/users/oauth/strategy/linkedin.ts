@@ -44,8 +44,8 @@ export class LinkedInOAuthStrategy implements OAuthStrategy {
 
       if (!user) throw new TemporaryServiceError();
       this.userInfoFromLinkedIn = user;
-    } catch {
-      throw new TemporaryServiceError();
+    } catch (error) {
+      throw new TemporaryServiceError(error);
     }
   }
 }

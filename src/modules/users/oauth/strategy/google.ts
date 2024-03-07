@@ -34,8 +34,8 @@ export class GoogleOAuthStrategy implements OAuthStrategy {
         idToken: this.token,
         audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
       });
-    } catch {
-      throw new TemporaryServiceError();
+    } catch (error) {
+      throw new TemporaryServiceError(error);
     }
 
     this.payload = ticket?.getPayload();

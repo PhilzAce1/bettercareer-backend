@@ -23,7 +23,7 @@ export class OAuth {
   }
 
   async verify() {
-    this.strategy.verify();
+    return this.strategy.verify();
   }
 
   private setUser(user: OAuthUser) {
@@ -31,7 +31,7 @@ export class OAuth {
   }
 
   async serialize() {
-    this.strategy.serialize(this.setUser);
+    return this.strategy.serialize(this.setUser);
   }
 
   getUser() {

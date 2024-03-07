@@ -36,7 +36,6 @@ export async function authenticate(
 
   await auth.verify();
   await auth.serialize();
-
   const OAuthUser = auth.getUser();
 
   let user = await this.prisma.user
@@ -50,8 +49,8 @@ export async function authenticate(
         },
       },
     })
-    .catch(() => {
-      throw new TemporaryServiceError();
+    .catch((error) => {
+      throw new TemporaryServiceError(error);
     });
 
   // TODO: check if user exist but with different provider
@@ -73,15 +72,17 @@ export async function authenticate(
           ],
         },
       })
-      .catch(() => {
-        throw new TemporaryServiceError();
+      .catch((error) => {
+        throw new TemporaryServiceError(error);
       });
 
     isNewUser = true;
   }
 
-  if (user.suspended) throw new TemporaryServiceError();
-  if (user.deleted) throw new TemporaryServiceError();
+  if (user.suspended)
+    throw new TemporaryServiceError('User has been suspended');
+  if (user.deleted)
+    throw new TemporaryServiceError('User account has been deleted');
 
   const userWithSession = await this.prisma.user
     .update({
@@ -95,8 +96,8 @@ export async function authenticate(
         }),
       },
     })
-    .catch(() => {
-      throw new TemporaryServiceError();
+    .catch((error) => {
+      throw new TemporaryServiceError(error);
     });
 
   if (!userWithSession.session) throw new TemporaryServiceError();
