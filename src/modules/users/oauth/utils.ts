@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { TemporaryServiceError } from '../../../helpers/error.js';
 
 type SessionPayload = {
   user: {
@@ -33,7 +34,7 @@ export const createSession = (payload: SessionPayload) => {
 };
 
 export const decodedSessionToken = (token?: string) => {
-  if (!token) throw new TypeError();
+  if (!token) throw new TemporaryServiceError();
 
   return jwt.decode(token, {
     complete: true,
