@@ -1,6 +1,6 @@
 import got from 'got';
 import { TemporaryServiceError } from '../../../../helpers/error.js';
-import { OAuthStrategy, SetOAuthUser } from './index.js';
+import { OAuthStrategy, OAuthUser } from './index.js';
 
 type UserInfoFromLinkedIn = {
   sub: string;
@@ -13,23 +13,28 @@ type UserInfoFromLinkedIn = {
 export class LinkedInOAuthStrategy implements OAuthStrategy {
   private userInfoFromLinkedIn: UserInfoFromLinkedIn | undefined;
   private token: string;
+  private user: OAuthUser | undefined;
 
   constructor(token?: string) {
     if (!token) throw new TemporaryServiceError();
     this.token = token;
   }
 
-  async serialize(setUser: SetOAuthUser) {
+  async serialize() {
     if (!this.userInfoFromLinkedIn) throw new TemporaryServiceError();
     const userInfo = this.userInfoFromLinkedIn;
 
-    setUser({
+    this.user = {
       id: userInfo.sub,
       name: userInfo.name,
       photo: userInfo.picture,
       email: userInfo.email,
       verifed: userInfo.email_verified,
-    });
+    };
+  }
+
+  me() {
+    return this.user;
   }
 
   async verify() {
@@ -44,8 +49,8 @@ export class LinkedInOAuthStrategy implements OAuthStrategy {
 
       if (!user) throw new TemporaryServiceError();
       this.userInfoFromLinkedIn = user;
-    } catch (error) {
-      throw new TemporaryServiceError(error);
+    } catch {
+      throw new TemporaryServiceError();
     }
   }
 }

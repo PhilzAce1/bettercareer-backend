@@ -1,3 +1,5 @@
+import { TemporaryServiceError } from '../../../../helpers/error.js';
+
 export type OAuthUser = {
   id: string;
   name?: string;
@@ -9,13 +11,13 @@ export type OAuthUser = {
 export type SetOAuthUser = (user: OAuthUser) => void;
 
 export interface OAuthStrategy {
-  serialize(setUser: SetOAuthUser): PromiseLike<void>;
+  serialize(): PromiseLike<void>;
   verify(): PromiseLike<void>;
+  me(): OAuthUser | undefined;
 }
 
 export class OAuth {
   private strategy: OAuthStrategy;
-  private user: OAuthUser | undefined;
 
   constructor(strategy?: OAuthStrategy) {
     if (!strategy) throw new TypeError();
@@ -26,17 +28,14 @@ export class OAuth {
     return this.strategy.verify();
   }
 
-  private setUser(user: OAuthUser) {
-    this.user = user;
+  me() {
+    const user = this.strategy.me();
+    if (!user) throw new TemporaryServiceError();
+    return user;
   }
 
   async serialize() {
-    return this.strategy.serialize(this.setUser);
-  }
-
-  getUser() {
-    if (!this.user) throw new TypeError();
-    return this.user;
+    return this.strategy.serialize();
   }
 }
 

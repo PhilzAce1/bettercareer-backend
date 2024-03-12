@@ -36,7 +36,7 @@ export async function authenticate(
 
   await auth.verify();
   await auth.serialize();
-  const OAuthUser = auth.getUser();
+  const OAuthUser = auth.me();
 
   let user = await this.prisma.user
     .findFirst({
