@@ -12,7 +12,7 @@ model User {
     id        String   @id @default(uuid())
     name      String
     photo     String?
-    email     String
+    email     String @unique
     suspended Boolean? @default(false)
     deleted   Boolean? @default(false)
     verified  Boolean? @default(false)
