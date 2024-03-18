@@ -11,6 +11,8 @@ export const schema = {
     'SESSION_TOKEN_LIFETIME',
     'SESSION_TOKEN_KEY',
     'LINKEDIN_OAUTH_USERINFO_ENDPOINT',
+    'RESEND_API_KEY',
+    'RESEND_FROM',
   ] as const,
   properties: {
     PORT: {
@@ -28,6 +30,8 @@ export const schema = {
     },
     SESSION_TOKEN_KEY: { type: 'string' },
     LINKEDIN_OAUTH_USERINFO_ENDPOINT: { type: 'string' },
+    RESEND_API_KEY: { type: 'string' },
+    RESEND_FROM: { type: 'string' },
   },
 } as const;
 
