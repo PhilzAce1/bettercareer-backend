@@ -49,13 +49,6 @@ export async function addToWaitlist(
 
   const { name, email, resume } = request.body;
 
-  // if (resume && !(await isValidPDF(Buffer.from(resume)))) {
-  //   return reply.status(400).send({
-  //     error: true,
-  //     message: `Please upload a valid PDF for resume`,
-  //   });
-  // }
-
   const isWaitlisted = await this.prisma.waitlist.count({
     where: { email },
   });
@@ -63,6 +56,7 @@ export async function addToWaitlist(
   if (isWaitlisted) return reply.status(200);
 
   const waitlistEmail = await sendWaitlistEmail({ email, name });
+
   if (!waitlistEmail.error) {
     return reply.status(500).send({
       error: true,
@@ -71,13 +65,21 @@ export async function addToWaitlist(
     });
   }
 
-  // upload resume
-
   const user = await this.prisma.waitlist.create({
-    data: { email, name, resume: 'string' },
+    data: { email, name },
     select: { name: true, email: true },
   });
 
+  if (resume && (await isValidPDF(Buffer.from(resume)))) {
+    await this.prisma.waitlist.update({
+      where: {
+        email: user.email,
+      },
+      data: {
+        resume: resume.toString(),
+      },
+    });
+  }
   return reply.status(201).send({
     user,
   });
