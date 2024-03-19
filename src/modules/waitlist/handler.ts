@@ -49,12 +49,12 @@ export async function addToWaitlist(
 
   const { name, email, resume } = request.body;
 
-  if (resume && !(await isValidPDF(Buffer.from(resume)))) {
-    return reply.status(400).send({
-      error: true,
-      message: `Please upload a valid PDF for resume`,
-    });
-  }
+  // if (resume && !(await isValidPDF(Buffer.from(resume)))) {
+  //   return reply.status(400).send({
+  //     error: true,
+  //     message: `Please upload a valid PDF for resume`,
+  //   });
+  // }
 
   const isWaitlisted = await this.prisma.waitlist.count({
     where: { email },

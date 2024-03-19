@@ -34,7 +34,7 @@ server.decorate('oauthorize', guards.oauthorize);
 
 await server.register(import('@fastify/static'), {
   root: join(__dirname, '..', 'static'),
-  prefix: '/static/',
+  prefix: '/static/'
 });
 
 await server.register(autoload, {
